@@ -2,6 +2,13 @@
 
 A query layer that indexes data from a Giraffa Node and provides a graph query interface
 
+## Overview
+
+This repo is split into packages, each representing an application.
+
+- [@giraffa/event-listener](packges/event-listener) An event listener that indexes data into a graph database
+- [@giraffa/query-server](packges/query-server) A server that provides a graph query interface
+
 ## Getting Started
 
 ### Installing
