@@ -1,0 +1,22 @@
+{
+  "name": "@giraffa/query-server",
+  "version": "0.0.0",
+  "description": "Providers a graph query interface",
+  "keywords": [],
+  "author": "Giraffa Labs <hello@giraffa.io>",
+  "main": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giraffalabs/giraffa-query.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/giraffalabs/giraffa-query/issues"
+  },
+  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/query-server#readme"
+}

@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/event-listener" },
+    { "path": "packages/query-server" }
+  ]
+}

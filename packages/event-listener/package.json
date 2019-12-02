@@ -1,0 +1,22 @@
+{
+  "name": "@giraffa/event-listener",
+  "version": "0.0.0",
+  "description": "Listens to Giraffa Node's events and builds a graph database",
+  "keywords": [],
+  "author": "Giraffa Labs <hello@giraffa.io>",
+  "main": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giraffalabs/giraffa-query.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/giraffalabs/giraffa-query/issues"
+  },
+  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme"
+}
