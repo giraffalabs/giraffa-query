@@ -4,6 +4,7 @@
   "description": "Listens to Giraffa Node's events and builds a graph database",
   "keywords": [],
   "author": "Giraffa Labs <hello@giraffa.io>",
+  "license": "MIT",
   "main": "src/index.js",
   "publishConfig": {
     "access": "public"
@@ -13,10 +14,16 @@
     "url": "git+https://github.com/giraffalabs/giraffa-query.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc -b",
+    "start": "yarn build && node dist/index.js"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"
   },
-  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme"
+  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme",
+  "dependencies": {
+    "@polkadot/api": "^0.97.1",
+    "dotenv": "^8.2.0"
+  }
 }
