@@ -1,5 +1,8 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import dotenv from "dotenv";
+import { BlockHash, Header, EventRecord } from "@polkadot/types/interfaces";
+import { Vec } from "@polkadot/types";
+import BN from "bn.js";
 
 dotenv.config();
 
@@ -21,7 +24,7 @@ const types = {
   Value: "PropertyValue"
 };
 
-async function main() {
+async function main(): Promise<void> {
   // Initialise the provider to connect to the local node
   const provider = new WsProvider(
     `ws://${process.env.SUBSTRATE_HOST}:${process.env.SUBSTRATE_PORT}`
@@ -41,8 +44,23 @@ async function main() {
     filterList = SUBSTRATE_EVENT_SECTIONS.split(",");
   }
 
-  api.query.system.events(async events => {
-    // // loop through the Vec<EventRecord>
+  let localLatestBlockHash: BlockHash = api.genesisHash;
+  const localLatestBlockHeader: Header = await api.rpc.chain.getHeader(
+    localLatestBlockHash
+  );
+  let localLatestBlockNumber: BN = localLatestBlockHeader.number.toBn();
+
+  const currentBlockHash: BlockHash = await api.rpc.chain.getFinalizedHead();
+  // if no hash
+  const one = new BN(1);
+
+  while (!localLatestBlockHash.eq(currentBlockHash)) {
+    console.log("Local Block Number", localLatestBlockNumber.toString(10));
+
+    // get events
+    const events: Vec<EventRecord> = await api.query.system.events.at(
+      currentBlockHash
+    );
     events.forEach(async record => {
       // extract the phase, event and the event types
       const { event, phase } = record;
@@ -68,7 +86,22 @@ async function main() {
         console.log(`\t\t${types[index].type}: ${parameter.toString()}`);
       });
     });
-  });
+    // get next block hash
+    localLatestBlockNumber = localLatestBlockNumber.add(one);
+    localLatestBlockHash = await api.rpc.chain.getBlockHash(
+      localLatestBlockNumber.toString(10)
+    );
+  }
+
+  // let count = 0;
+  // const unsubscribe = await api.rpc.chain.subscribeFinalizedHeads(header => {
+  //   console.log(`Chain is at block: #${header.number}`);
+
+  //   if (++count === 256) {
+  //     unsubscribe();
+  //     process.exit(0);
+  //   }
+  // });
 }
 
 main().catch(error => {
