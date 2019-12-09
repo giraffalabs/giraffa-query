@@ -1,2 +1,3 @@
 dist/
-tsconfig.tsbuildinfo
+**/db.json
+**/tsconfig.tsbuildinfo
