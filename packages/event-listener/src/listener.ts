@@ -1,34 +1,21 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import dotenv from "dotenv";
-import Queue from "bull";
-import types from "./types";
+// types and interfaces
 import { JobData } from "./interfaces";
 
-dotenv.config();
-
-const REDIS_URL: string = process.env.REDIS_URL
-  ? process.env.REDIS_URL
-  : "redis://127.0.0.1:6379";
-
-const syncQueue = new Queue("sync", REDIS_URL);
+// utils
+import queue from "./utils/queue";
+import { getApiAsync } from "./utils/api";
+import log from "./utils/log";
 
 async function main(): Promise<void> {
-  // Initialise the provider to connect to the local node
-  const provider = new WsProvider(
-    `ws://${process.env.SUBSTRATE_HOST}:${process.env.SUBSTRATE_PORT}`
-  );
-
-  const api = await ApiPromise.create({
-    types,
-    provider
-  });
+  const api = await getApiAsync();
 
   const unsubscribe = await api.rpc.chain.subscribeFinalizedHeads(header => {
-    console.log(`Chain is at block: #${header.number}`);
+    log.printStr(`Chain is at block: #${header.number}`);
+
     const jobData: JobData = {
       blockNumberStr: header.number.toString()
     };
-    syncQueue.add(jobData);
+    queue.add(jobData);
   });
 }
 

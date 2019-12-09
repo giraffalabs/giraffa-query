@@ -1,104 +1,59 @@
-import Queue from "bull";
-import dotenv from "dotenv";
-import { WsProvider, ApiPromise } from "@polkadot/api";
-import {
-  BlockHash,
-  Header,
-  EventRecord,
-  BlockNumber
-} from "@polkadot/types/interfaces";
-import BN from "bn.js";
+// types and interfaces
+import { EventRecord } from "@polkadot/types/interfaces";
 import { Vec } from "@polkadot/types";
-import types from "./types";
 import { JobData, EventObject } from "./interfaces";
-import low from "lowdb";
-import FileSync from "lowdb/adapters/FileSync";
-import graphDb from "./graphDb";
+import { ApiPromise } from "@polkadot/api";
 
-// set environment variables
-dotenv.config();
+// utils
+import BN from "bn.js";
+import graphDb from "./utils/graphDb";
+import queue from "./utils/queue";
+import { getApiAsync } from "./utils/api";
+import { isFiltered } from "./utils/eventFilter";
+import log from "./utils/log";
+import localStorage from "./utils/localStorage";
 
-const REDIS_URL: string = process.env.REDIS_URL
-  ? process.env.REDIS_URL
-  : "redis://127.0.0.1:6379";
-
-const syncQueue = new Queue("sync", REDIS_URL);
+const one = new BN(1);
 
 async function main(): Promise<void> {
-  // Initialise the provider to connect to the local node
-  const provider = new WsProvider(
-    `ws://${process.env.SUBSTRATE_HOST}:${process.env.SUBSTRATE_PORT}`
-  );
+  const api: ApiPromise = await getApiAsync();
 
-  const api = await ApiPromise.create({
-    types,
-    provider
-  });
+  // get latest local block number
+  const latestLocalBlockNumberStr: string = localStorage.getLatestLocalBlockNumberStr();
+  let latestLocalBlockNumber: BN = new BN(latestLocalBlockNumberStr);
 
-  const adapter = new FileSync("db.json", {
-    defaultValue: { localLatestBlockNumber: "0" }
-  });
-  const db = low(adapter);
+  queue.process(async jobData => {
+    log.printStr(`\n -------------- \nJob Data: ${JSON.stringify(jobData)}\n`);
 
-  // Event Filter List
-  let filterList: string[];
-  const SUBSTRATE_EVENT_SECTIONS = process.env.SUBSTRATE_EVENT_SECTIONS;
-  if (!SUBSTRATE_EVENT_SECTIONS || SUBSTRATE_EVENT_SECTIONS == "all") {
-    filterList = ["all"];
-  } else {
-    filterList = SUBSTRATE_EVENT_SECTIONS.split(",");
-  }
-
-  const localLatestBlockHeaderStr: string = db
-    .get("localLatestBlockNumber")
-    .value()
-    .toString();
-  let localLatestBlockNumber: BN = new BN(localLatestBlockHeaderStr);
-
-  const one = new BN(1);
-
-  syncQueue.process(async (job, done) => {
-    console.log("/---- \n Job Data:", job.data);
-
-    const { blockNumberStr }: JobData = job.data;
+    const { blockNumberStr }: JobData = jobData;
 
     const currentBlockNumber: BN = new BN(blockNumberStr);
 
-    while (localLatestBlockNumber.lte(currentBlockNumber)) {
-      console.log("Local Block Number", localLatestBlockNumber.toString(10));
+    while (latestLocalBlockNumber.lte(currentBlockNumber)) {
+      log.printStr(
+        `Processing Block Number: ${latestLocalBlockNumber.toString(10)}`
+      );
 
       const localLatestBlockHash = await api.rpc.chain.getBlockHash(
-        localLatestBlockNumber.toString(10)
+        latestLocalBlockNumber.toString(10)
       );
 
       // get events
       const events: Vec<EventRecord> = await api.query.system.events.at(
         localLatestBlockHash
       );
-      events.forEach(async record => {
-        // extract the phase, event and the event types
-        const { event, phase } = record;
-        const types = event.typeDef;
+      // process each event
+      events.forEach(async eventRecord => {
+        const { event } = eventRecord;
 
         // filter event section
-        if (
-          !(
-            filterList.includes(event.section.toString()) ||
-            filterList.includes("all")
-          )
-        ) {
+        if (!isFiltered(event.section.toString())) {
           return;
         }
 
         // show what we are busy with
-        // console.log(
-        //   `\n${event.section}:${event.method}:: (phase=${phase.toString()})`
-        // );
-        // console.log(`\t${event.meta.documentation.toString()}`);
-        // // log to events
-        // event.data.forEach((parameter, index) => {
-        //   console.log(`\t\t${types[index].type}: ${parameter.toString()}`);
-        // });
+        log.printEvent(eventRecord);
+
         const eventObject: EventObject = {
           section: event.section,
           method: event.method,
@@ -111,16 +66,14 @@ async function main(): Promise<void> {
       });
 
       // get next block hash
-      localLatestBlockNumber = localLatestBlockNumber.add(one);
+      latestLocalBlockNumber = latestLocalBlockNumber.add(one);
       // update local block number
-      db.set(
-        "localLatestBlockNumber",
-        localLatestBlockNumber.toString()
-      ).write();
+      localStorage.setLatestLocalBlockNumberStr(
+        latestLocalBlockNumber.toString()
+      );
     }
 
-    console.log("Done Job");
-    done();
+    log.printStr("Job Done");
   });
 }
 
