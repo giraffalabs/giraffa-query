@@ -16,7 +16,8 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc -b",
-    "start": "yarn build && node dist/index.js"
+    "start": "yarn build && node dist/index.js",
+    "dev": "tsc -b -w"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"
@@ -24,6 +25,14 @@
   "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme",
   "dependencies": {
     "@polkadot/api": "^0.98.0-beta.2",
-    "dotenv": "^8.2.0"
+    "bull": "^3.12.1",
+    "commander": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "lowdb": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bull": "^3.10.6",
+    "@types/lowdb": "^1.0.9",
+    "@types/node": "^12.12.14"
   }
 }
