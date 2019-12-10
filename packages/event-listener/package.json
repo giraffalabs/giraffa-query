@@ -16,7 +16,9 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc -b",
-    "start": "yarn build && node dist/index.js",
+    "start": "concurrently \"yarn start:listener\" \"yarn start:worker\"",
+    "start:listener": "node dist/listener.js",
+    "start:worker": "node dist/worker.js",
     "dev": "tsc -b -w"
   },
   "bugs": {
