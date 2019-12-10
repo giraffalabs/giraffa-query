@@ -13,6 +13,13 @@ import { isFiltered } from "./utils/eventFilter";
 import log from "./utils/log";
 import localStorage from "./utils/localStorage";
 
+// cli
+import program from "commander";
+
+// setup cli
+program.version("0.1.0").option("-S, --silent", "Silent Mode");
+program.parse(process.argv);
+
 const one = new BN(1);
 
 async function main(): Promise<void> {
@@ -23,16 +30,20 @@ async function main(): Promise<void> {
   let latestLocalBlockNumber: BN = new BN(latestLocalBlockNumberStr);
 
   queue.process(async jobData => {
-    log.printStr(`\n -------------- \nJob Data: ${JSON.stringify(jobData)}\n`);
+    if (!program.silent) {
+      log.printStr(`\n ---------- \nJob Data: ${JSON.stringify(jobData)}\n`);
+    }
 
     const { blockNumberStr }: JobData = jobData;
 
     const currentBlockNumber: BN = new BN(blockNumberStr);
 
     while (latestLocalBlockNumber.lte(currentBlockNumber)) {
-      log.printStr(
-        `Processing Block Number: ${latestLocalBlockNumber.toString(10)}`
-      );
+      if (!program.silent) {
+        log.printStr(
+          `Processing Block Number: ${latestLocalBlockNumber.toString(10)}`
+        );
+      }
 
       const localLatestBlockHash = await api.rpc.chain.getBlockHash(
         latestLocalBlockNumber.toString(10)
@@ -52,7 +63,9 @@ async function main(): Promise<void> {
         }
 
         // show what we are busy with
-        log.printEvent(eventRecord);
+        if (!program.silent) {
+          log.printEvent(eventRecord);
+        }
 
         const eventObject: EventObject = {
           section: event.section,
@@ -72,8 +85,9 @@ async function main(): Promise<void> {
         latestLocalBlockNumber.toString()
       );
     }
-
-    log.printStr("Job Done");
+    if (!program.silent) {
+      log.printStr("Job Done");
+    }
   });
 }
 
