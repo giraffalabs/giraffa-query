@@ -4,6 +4,7 @@
   "description": "Listens to Giraffa Node's events and builds a graph database",
   "keywords": [],
   "author": "Giraffa Labs <hello@giraffa.io>",
+  "license": "MIT",
   "main": "src/index.js",
   "publishConfig": {
     "access": "public"
@@ -13,10 +14,27 @@
     "url": "git+https://github.com/giraffalabs/giraffa-query.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc -b",
+    "start": "concurrently \"yarn start:listener --silent\" \"yarn start:worker --silent\"",
+    "start:listener": "node dist/listener.js",
+    "start:worker": "node dist/worker.js",
+    "dev": "tsc -b -w"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"
   },
-  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme"
+  "homepage": "https://github.com/giraffalabs/giraffa-query/tree/master/packages/event-listener#readme",
+  "dependencies": {
+    "@polkadot/api": "^0.98.0-beta.2",
+    "bull": "^3.12.1",
+    "commander": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "lowdb": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bull": "^3.10.6",
+    "@types/lowdb": "^1.0.9",
+    "@types/node": "^12.12.14"
+  }
 }

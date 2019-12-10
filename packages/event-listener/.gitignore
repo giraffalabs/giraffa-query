@@ -1,2 +1,3 @@
-lib/
-tsconfig.tsbuildinfo
+dist/
+**/db.json
+**/tsconfig.tsbuildinfo
