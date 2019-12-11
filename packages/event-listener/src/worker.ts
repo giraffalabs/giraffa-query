@@ -71,11 +71,11 @@ async function main(): Promise<void> {
           section: event.section,
           method: event.method,
           meta: event.meta.documentation.toString(),
-          data: event.data.toString()
+          data: event.data
         };
 
         // insert into db
-        graphDb.insert(eventObject);
+        await graphDb.insertAsync(eventObject);
       });
 
       // get next block hash

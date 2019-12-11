@@ -30,7 +30,8 @@
     "bull": "^3.12.1",
     "commander": "^4.0.1",
     "dotenv": "^8.2.0",
-    "lowdb": "^1.0.0"
+    "lowdb": "^1.0.0",
+    "neo4j-driver": "^4.0.0"
   },
   "devDependencies": {
     "@types/bull": "^3.10.6",
