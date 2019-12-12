@@ -8,7 +8,7 @@ const SUBSTRATE_EVENT_SECTIONS = process.env.SUBSTRATE_EVENT_SECTIONS;
 if (!SUBSTRATE_EVENT_SECTIONS || SUBSTRATE_EVENT_SECTIONS == "all") {
   filterList = ["all"];
 } else {
-  filterList = SUBSTRATE_EVENT_SECTIONS.split(",");
+  filterList = SUBSTRATE_EVENT_SECTIONS.split(",").map(item => item.trim());
 }
 
 export const isFiltered = (eventStr: string): boolean => {
