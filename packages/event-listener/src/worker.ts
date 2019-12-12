@@ -1,3 +1,7 @@
+// !important: set environment variables
+import dotenv from "dotenv";
+dotenv.config();
+
 // types and interfaces
 import { EventRecord } from "@polkadot/types/interfaces";
 import { Vec } from "@polkadot/types";

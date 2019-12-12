@@ -1,8 +1,5 @@
-import dotenv from "dotenv";
 import neo4j from "neo4j-driver";
 import { Session, Driver } from "neo4j-driver/types";
-
-dotenv.config();
 
 const {
   NEO4J_URI = "neo4j://localhost",
