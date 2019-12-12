@@ -19,7 +19,8 @@
     "start": "concurrently \"yarn start:listener --silent\" \"yarn start:worker --silent\"",
     "start:listener": "node dist/listener.js",
     "start:worker": "node dist/worker.js",
-    "dev": "tsc -b -w"
+    "dev": "tsc -b -w",
+    "clean": "rm -f db.json"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"
