@@ -13,5 +13,6 @@ export default {
       AccountId: "AccountId"
     }
   },
+  Key: "PropertyKey",
   Value: "PropertyValue"
 };
