@@ -52,7 +52,7 @@ function setContentProperty(
   CALL apoc.create.setProperty(n, $key, $value) YIELD node
   return node
     `,
-    { cid, key, value }
+    { cid, key: "p" + key, value }
   );
 }
 
@@ -63,19 +63,37 @@ function setContentProperty(
 
 // CALL apoc.create.setRelProperty(260, "test", "yo")
 
-function setLinkProperty(tx: Transaction, key: string, value: string): Result {
-  return tx.run(`CREATE (a:Link {key: $key, value:$value})`, { key, value });
+function setLinkProperty(
+  tx: Transaction,
+  lid: string,
+  key: string,
+  value: string
+): Result {
+  return tx.run(
+    `
+  MATCH (a: Content)-[r: Link]->(b: Content)
+  WHERE r.lid = $lid
+  CALL apoc.create.setRelProperty(r, $key, $value) YIELD rel
+  return rel
+    `,
+    { lid, key: "p" + key, value }
+  );
 }
 
 function createLink(
   tx: Transaction,
+  lid: string,
   from: string,
   to: string,
   linkType: string
 ): Result {
   return tx.run(
-    "MATCH (a:Content {cid: $from}),(b:Content {cid: $to}) MERGE (a)-[r: $linkType]->(b)",
+    `
+    MATCH (a:Content {cid: $from}),(b:Content {cid: $to})
+    MERGE (a)-[r: Link {lid: $lid, linkType: $linkType}]->(b)
+    `,
     {
+      lid,
       from,
       to,
       linkType
@@ -107,8 +125,8 @@ async function contentPropertySet(data: EventData): Promise<void> {
 }
 
 async function linkPropertySet(data: EventData): Promise<void> {
-  const accountId = data[0].toString();
-  const linkIdentifier = data[1].toString();
+  // const accountId = data[0].toString();
+  const lid = data[1].toString();
   const key = data[2].toString();
   const value = data[3].toString();
 
@@ -116,7 +134,7 @@ async function linkPropertySet(data: EventData): Promise<void> {
 
   const tx = session.beginTransaction();
   try {
-    const result = await setLinkProperty(tx, key, value);
+    const result = await setLinkProperty(tx, lid, key, value);
     console.log(JSON.stringify(result));
 
     await tx.commit();
@@ -131,16 +149,17 @@ async function linkPropertySet(data: EventData): Promise<void> {
 }
 
 async function contentLinked(data: EventData): Promise<void> {
-  const accountId = data[0].toString();
-  const from = data[1].toString();
-  const to = data[2].toString();
-  const linkType = data[3].toString();
+  // const accountId = data[0].toString();
+  const lid = data[1].toString();
+  const from = data[2].toString();
+  const to = data[3].toString();
+  const linkType = data[4].toString();
 
   const session = newSession();
 
   const tx = session.beginTransaction();
   try {
-    const result = await createLink(tx, from, to, linkType);
+    const result = await createLink(tx, lid, from, to, linkType);
     console.log(JSON.stringify(result));
 
     await tx.commit();
