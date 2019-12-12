@@ -58,7 +58,7 @@ async function main(): Promise<void> {
         const { event } = eventRecord;
 
         // filter event section
-        if (!isFiltered(event.section.toString())) {
+        if (!isFiltered(event.section)) {
           return;
         }
 
