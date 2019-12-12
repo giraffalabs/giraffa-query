@@ -19,8 +19,12 @@
     "start": "concurrently \"yarn start:listener --silent\" \"yarn start:worker --silent\"",
     "start:listener": "node dist/listener.js",
     "start:worker": "node dist/worker.js",
+    "start:dep": "concurrently \"redis-server\" \"neo4j console\"",
     "dev": "tsc -b -w",
-    "clean": "rm -f db.json"
+    "clean": "yarn clean:ls && yarn clean:neo4j && yarn clean:redis",
+    "clean:ls": "rm -f db.json",
+    "clean:neo4j": "node scripts/cleanNeo4j.js",
+    "clean:redis": "redis-cli FLUSHDB"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"

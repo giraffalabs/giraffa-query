@@ -2,7 +2,7 @@ import neo4j from "neo4j-driver";
 import { Session, Driver } from "neo4j-driver/types";
 
 const {
-  NEO4J_URI = "neo4j://localhost",
+  NEO4J_URI = "bolt://127.0.0.1:7687",
   NEO4J_USER = "neo4j",
   NEO4J_PASS = "neo4j",
   NEO4J_DB = "graph.db"
