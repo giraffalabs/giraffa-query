@@ -6,10 +6,10 @@ export default {
   PropertyKey: "u64",
   PropertyValue: {
     _enum: {
-      Uint64: "u64",
       Char32: "[u8; 32]",
-      Bool: "bool",
       Hash: "Hash",
+      Uint64: "u64",
+      Bool: "bool",
       AccountId: "AccountId"
     }
   },
