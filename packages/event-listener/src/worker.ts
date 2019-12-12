@@ -1,3 +1,7 @@
+// !important: set environment variables
+import dotenv from "dotenv";
+dotenv.config();
+
 // types and interfaces
 import { EventRecord } from "@polkadot/types/interfaces";
 import { Vec } from "@polkadot/types";
@@ -58,7 +62,7 @@ async function main(): Promise<void> {
         const { event } = eventRecord;
 
         // filter event section
-        if (!isFiltered(event.section.toString())) {
+        if (!isFiltered(event.section)) {
           return;
         }
 
@@ -71,11 +75,11 @@ async function main(): Promise<void> {
           section: event.section,
           method: event.method,
           meta: event.meta.documentation.toString(),
-          data: event.data.toString()
+          data: event.data
         };
 
         // insert into db
-        graphDb.insert(eventObject);
+        await graphDb.insertAsync(eventObject);
       });
 
       // get next block hash

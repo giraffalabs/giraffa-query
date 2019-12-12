@@ -19,7 +19,12 @@
     "start": "concurrently \"yarn start:listener --silent\" \"yarn start:worker --silent\"",
     "start:listener": "node dist/listener.js",
     "start:worker": "node dist/worker.js",
-    "dev": "tsc -b -w"
+    "start:dep": "concurrently \"redis-server\" \"neo4j console\"",
+    "dev": "tsc -b -w",
+    "clean": "yarn clean:ls && yarn clean:neo4j && yarn clean:redis",
+    "clean:ls": "rm -f db.json",
+    "clean:neo4j": "node scripts/cleanNeo4j.js",
+    "clean:redis": "redis-cli FLUSHDB"
   },
   "bugs": {
     "url": "https://github.com/giraffalabs/giraffa-query/issues"
@@ -30,7 +35,8 @@
     "bull": "^3.12.1",
     "commander": "^4.0.1",
     "dotenv": "^8.2.0",
-    "lowdb": "^1.0.0"
+    "lowdb": "^1.0.0",
+    "neo4j-driver": "^4.0.0"
   },
   "devDependencies": {
     "@types/bull": "^3.10.6",

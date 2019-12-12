@@ -1,8 +1,5 @@
-import dotenv from "dotenv";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import giraffaTypes from "../giraffaTypes";
-
-dotenv.config();
 
 // Initialise the provider to connect to the local node
 const provider = new WsProvider(

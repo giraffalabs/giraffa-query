@@ -1,8 +1,5 @@
-import dotenv from "dotenv";
 import Queue from "bull";
 import { JobData } from "../interfaces";
-
-dotenv.config();
 
 const REDIS_URL: string = process.env.REDIS_URL
   ? process.env.REDIS_URL
